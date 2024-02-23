@@ -13,9 +13,9 @@ namespace AuthMicroservice.Middleware
 
         public async Task CustomResponse(HttpContext context, string message, int status)
         {
+
+
             context.Response.ContentType = "application/json";
-
-
             var errorResponse = new GatewayCustomResponse
             {
                 Status = status,
@@ -30,15 +30,18 @@ namespace AuthMicroservice.Middleware
         {
             await _next(context);
 
+           
+
             if (context.Response.StatusCode == 401)
             {
                 await CustomResponse(context, "Unauthorized. Please provide valid credentials.", 401);
 
             }
-            if (context.Response.StatusCode == 502)
+            else if (context.Response.StatusCode == 502)
             {
                 await CustomResponse(context, "Service Down temporarily.", 502);
             }
+           
         }
     }
 }

@@ -44,7 +44,7 @@ namespace AuthMicroservice.Middleware
                 context.Response.StatusCode = 500;
             }
 
-
+            
             var errorResponse = new
             GatewayCustomResponse()
             {

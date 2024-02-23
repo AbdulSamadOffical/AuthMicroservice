@@ -28,8 +28,9 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseMiddleware<GlobalExceptionMiddleware>();
+
 app.UseMiddleware<CustomUnauthorizedMiddleware>();
+app.UseMiddleware<GlobalExceptionMiddleware>();
 //app.MapControllers();
 
 app.UseEndpoints(endpoints =>
