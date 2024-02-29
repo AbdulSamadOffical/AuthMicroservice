@@ -67,6 +67,7 @@ namespace AuthMicroservice.Services
                     claims: authClaims,
                     signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
                         );
+                
                 return token;
             }
           
@@ -78,7 +79,7 @@ namespace AuthMicroservice.Services
         {
             var userExists = await _userManager.FindByNameAsync(model.Username);
             if (userExists != null)
-                throw new NotFoundException("user doesn't exist's.");
+                throw new NotFoundException("user exists already");
 
             ApplicationUser user = new ApplicationUser()
             {
@@ -87,9 +88,10 @@ namespace AuthMicroservice.Services
                 UserName = model.Username
             };
             var result = await _userManager.CreateAsync(user, model.Password);
-            var message = new User() { UserName = model.Username , Email = model.Email};
-            await _bus.SendAsync<User>("user", message);
-            _logger.LogInformation($"Message produced sucessfully Username: {user.UserName}, Stock Symbol: {user.Email}");
+            var userIdentity = await _userManager.FindByNameAsync(model.Username);
+            var message = new User() { UserName = userIdentity.UserName , Email = userIdentity.Email, Id = userIdentity.Id};
+            await _bus.SendAsync<User>("user-auth", message);
+            _logger.LogInformation($"Message produced sucessfully Username: {user.UserName}, Stock Symbol: {user.Email}, Stock Symbol: {user.Id}");
             return result;
         }
        

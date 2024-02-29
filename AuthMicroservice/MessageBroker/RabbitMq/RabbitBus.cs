@@ -18,12 +18,14 @@ namespace Stock.Infrastructure.MessageBroker.rabbitmq
             _channel = channel;
             _logger = logger;
         }
-        public async Task SendAsync<T>(string queue, T message)
+        public async Task SendAsync<T>(string exchange, T message)
         {
             try
             {
+                /*
                 await Task.Run(() =>
                 {
+                    _channel.ExchangeDeclare(queue, ExchangeType.Fanout, true);
                     _channel.QueueDeclare(queue, true, false, false);
                     var properties = _channel.CreateBasicProperties();
                     properties.Persistent = false;
@@ -31,7 +33,16 @@ namespace Stock.Infrastructure.MessageBroker.rabbitmq
                     _channel.BasicPublish(string.Empty, queue, null,
                     Encoding.UTF8.GetBytes(output));
                 });
-                
+*/
+                await Task.Run(() =>
+                {
+                    _channel.ExchangeDeclare(exchange, ExchangeType.Fanout, true);
+                    var properties = _channel.CreateBasicProperties();
+                    properties.Persistent = false;
+                    var output = JsonConvert.SerializeObject(message);
+                    _channel.BasicPublish(exchange, string.Empty, null,
+                        Encoding.UTF8.GetBytes(output));
+                });
             }
             catch (Exception ex)
             {
